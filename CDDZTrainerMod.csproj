@@ -34,19 +34,26 @@
 
   <ItemGroup>
 	<None Update="ModInfo.json" CopyToOutputDirectory="PreserveNewest" />
-	<None Update="icon.png" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="icon2.png" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="icon3.png" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="icon4.png" CopyToOutputDirectory="PreserveNewest" />
+	<None Update="Images\**\*.png" CopyToOutputDirectory="PreserveNewest" />
     <None Remove="GameDir.props;GameDir.props.example;README.txt;build.bat" />
   </ItemGroup>
 
   <!-- After a successful build, copy the mod into the game's mods folder (if it exists).
        Turn off with: msbuild /p:InstallToGame=false -->
+  <!--
   <Target Name="InstallToGame" AfterTargets="Build" Condition="'$(InstallToGame)' != 'false' And Exists('$(GameDir)\mods')">
     <MakeDir Directories="$(ModInstallDir)" />
-	  <Copy SourceFiles="$(TargetPath);$(MSBuildProjectDirectory)\ModInfo.json;$(MSBuildProjectDirectory)\icon.png;$(MSBuildProjectDirectory)\icon2.png;$(MSBuildProjectDirectory)\icon3.png;$(MSBuildProjectDirectory)\icon4.png" DestinationFolder="$(ModInstallDir)" />
+	  <Copy SourceFiles="$(TargetPath);$(MSBuildProjectDirectory)\ModInfo.json" DestinationFolder="$(ModInstallDir)" />
+	  <Copy SourceFiles="@(None)" Condition="'%(RecursiveDir)' != '' And %(Filename) == 'icon' Or %(Filename) == 'icon2' Or %(Filename) == 'icon3' Or %(Filename) == 'icon4'" DestinationFolder="$(ModInstallDir)\Images\%(RecursiveDir)" />
     <Message Importance="high" Text="Installed mod to $(ModInstallDir)" />
   </Target>
+  --> <!--deprecated above, after attempting to update, refer to below-->
+
+	<Target Name="InstallToGame" AfterTargets="Build" Condition="'$(InstallToGame)' != 'false' And Exists('$(GameDir)\mods')">
+	  <MakeDir Directories="$(ModInstallDir);$(ModInstallDir)\Images" />
+  	    <Copy SourceFiles="$(TargetDir)$(TargetFileName);$(TargetDir)ModInfo.json" DestinationFolder="$(ModInstallDir)" />
+	    <Copy SourceFiles="@(None)" Condition="'%(RecursiveDir)' != '' And %(Filename) == 'icon' Or %(Filename) == 'icon2' Or %(Filename) == 'icon3' Or %(Filename) == 'icon4'" DestinationFolder="$(ModInstallDir)\Images\%(RecursiveDir)" />
+	  <Message Importance="high" Text="Installed mod and images to $(ModInstallDir)" />
+	</Target>
 
 </Project>

@@ -319,6 +319,10 @@ namespace CDDZTrainer
         private bool imageBg = true;
 
         private int currentImageIndex = 0; // 0 = icon.png, 1 = icon2.png, 2 = icon3.png, 3 = icon4.png | suggested by EyeCantSee, made By EyeCantSee (im crazy </3)
+        private int lastLoadedIndex = -1; // security blanket
+
+        private string currImgName;
+        private string nextCurrImgName;
 
         // New additions to add a image to the menu gui as it's cooler than just a transparent black cube essentially
         void InitWindowStyle() // kinda hard-coded?
@@ -326,33 +330,70 @@ namespace CDDZTrainer
             // if (styleInitialized) return; // no longer needed as settings have been introduced, moved lower in the code
 
             string modDirectory = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            
-            // re-worked filePath to make a bloated version of switching types (not based on iis menu timmy, switch and case is programming)
-            string fileName = "icon.png";
-            if (currentImageIndex == 1) fileName = "icon2.png";
-            else if (currentImageIndex == 2) fileName = "icon3.png";
-            else if (currentImageIndex == 3) fileName = "icon4.png";
+            string fileName = "icon.png"; // default fallback
 
-            string path = System.IO.Path.Combine(modDirectory, fileName);
+            // Switch statement to pick the correct file based on the index rather than using the bloated shit code that didnt work
+            switch (currentImageIndex)
+            {
+                // nextCurrImgName does next thing as say processes afterwards, so this processes it after and currImgName is for a tick updated visual
+                case 0:
+                    fileName = "icon.png";
+                    currImgName = "Miku Uno";
+                    nextCurrImgName = "Wifiskeleton Cat";
+                    break;
+                case 1:
+                    fileName = "icon2.png";
+                    currImgName = "Wifiskeleton Cat";
+                    nextCurrImgName = "Hot Miku";
+                    break;
+                case 2:
+                    fileName = "icon3.png";
+                    currImgName = "Hot Miku";
+                    nextCurrImgName = "Kawaii Depreso Miku";
+                    break;
+                case 3:
+                    fileName = "icon4.png";
+                    currImgName = "Kawaii Depreso Miku";
+                    nextCurrImgName = "Miku Uno";
+                    break;
+            }
+
+            // orig: string path = System.IO.Path.Combine(modDirectory, fileName);
+            // new:
+            string path = System.IO.Path.Combine(modDirectory, "Images", fileName); // add Images\ as we are moving towards putting images in a folder to keep them sorted better than previously ever since we added more than 1 icon file (in png format)
 
             // Restore original state
             if (!System.IO.File.Exists(path))
             {
-                path = System.IO.Path.Combine(modDirectory, "icon.png");
-            }
+                path = System.IO.Path.Combine(modDirectory, "Images", "icon.png");
+            } // add image folder path
 
             // new non-hardcoded shit one that works:
             ///*
             if (System.IO.File.Exists(path))
             {
-                if (bgTexture == null)
+                //if (bgTexture == null)
+                if (bgTexture == null || lastLoadedIndex != currentImageIndex) // update to allow extra images
                 {
                     byte[] fileData = System.IO.File.ReadAllBytes(path);
+
+                    // Older stuff for one image
+                    /*
                     bgTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
                     bgTexture.LoadImage(fileData);
 
                     // Cache the original opaque pixels permanently on first load
                     originalPixels = bgTexture.GetPixels32();
+                    */
+
+                    // Newer stuff for extra images
+                    ///*
+                    if (bgTexture == null) bgTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+
+                    bgTexture.LoadImage(fileData);
+                    originalPixels = bgTexture.GetPixels32();
+                    lastLoadedIndex = currentImageIndex;
+                    //*/
                 }
 
                 // Always start from a clean copy of the original pixels
@@ -409,51 +450,55 @@ namespace CDDZTrainer
             }
             */
 
-            if (!styleInitialized) // this is where it got moved to
+            // fix initialisation for text coloration depending on image type by number
+            if (!styleInitialized)
             {
                 windowStyle = new GUIStyle(GUI.skin.window);
-                if (bgTexture != null)
-                {
-                    windowStyle.normal.background = bgTexture;
-                    windowStyle.active.background = bgTexture;
-                    windowStyle.hover.background = bgTexture;
-                    windowStyle.focused.background = bgTexture;
-                    windowStyle.onNormal.background = bgTexture;
-                    windowStyle.onActive.background = bgTexture;
-                    windowStyle.onHover.background = bgTexture;
-                    windowStyle.onFocused.background = bgTexture;
-                }
-
-                windowStyle.normal.textColor = Color.black;
-                windowStyle.active.textColor = Color.black;
-                windowStyle.hover.textColor = Color.black;
-                windowStyle.focused.textColor = Color.black;
-                windowStyle.onNormal.textColor = Color.black;
-                windowStyle.onActive.textColor = Color.black;
-                windowStyle.onHover.textColor = Color.black;
-                windowStyle.onFocused.textColor = Color.black;
-
                 toggleStyle = new GUIStyle(GUI.skin.toggle);
-                toggleStyle.normal.textColor = Color.black;
-                toggleStyle.active.textColor = Color.black;
-                toggleStyle.hover.textColor = Color.black;
-                toggleStyle.focused.textColor = Color.black;
-                toggleStyle.onNormal.textColor = Color.black;
-                toggleStyle.onActive.textColor = Color.black;
-                toggleStyle.onHover.textColor = Color.black;
-                toggleStyle.onFocused.textColor = Color.black;
-
                 buttonStyle = new GUIStyle(GUI.skin.button);
-                buttonStyle.normal.textColor = Color.black;
-                buttonStyle.active.textColor = Color.black;
-                buttonStyle.hover.textColor = Color.black;
-                buttonStyle.focused.textColor = Color.black;
-
                 labelStyle = new GUIStyle(GUI.skin.label);
-                labelStyle.normal.textColor = Color.black;
-
                 styleInitialized = true;
             }
+
+            if (bgTexture != null)
+            {
+                windowStyle.normal.background = bgTexture;
+                windowStyle.active.background = bgTexture;
+                windowStyle.hover.background = bgTexture;
+                windowStyle.focused.background = bgTexture;
+                windowStyle.onNormal.background = bgTexture;
+                windowStyle.onActive.background = bgTexture;
+                windowStyle.onHover.background = bgTexture;
+                windowStyle.onFocused.background = bgTexture;
+            }
+
+            // newer color returner for img change & no bloating
+            Color dynamicTextColor = (currentImageIndex == 0) ? Color.black : Color.white;
+
+            windowStyle.normal.textColor = dynamicTextColor;
+            windowStyle.active.textColor = dynamicTextColor;
+            windowStyle.hover.textColor = dynamicTextColor;
+            windowStyle.focused.textColor = dynamicTextColor;
+            windowStyle.onNormal.textColor = dynamicTextColor;
+            windowStyle.onActive.textColor = dynamicTextColor;
+            windowStyle.onHover.textColor = dynamicTextColor;
+            windowStyle.onFocused.textColor = dynamicTextColor;
+
+            toggleStyle.normal.textColor = dynamicTextColor;
+            toggleStyle.active.textColor = dynamicTextColor;
+            toggleStyle.hover.textColor = dynamicTextColor;
+            toggleStyle.focused.textColor = dynamicTextColor;
+            toggleStyle.onNormal.textColor = dynamicTextColor;
+            toggleStyle.onActive.textColor = dynamicTextColor;
+            toggleStyle.onHover.textColor = dynamicTextColor;
+            toggleStyle.onFocused.textColor = dynamicTextColor;
+
+            buttonStyle.normal.textColor = dynamicTextColor;
+            buttonStyle.active.textColor = dynamicTextColor;
+            buttonStyle.hover.textColor = dynamicTextColor;
+            buttonStyle.focused.textColor = dynamicTextColor;
+
+            labelStyle.normal.textColor = dynamicTextColor;
         }
 
         void OnGUI()
@@ -489,9 +534,21 @@ namespace CDDZTrainer
             // -----------------------------------------------------
 
             // Settings
-            if (GUILayout.Button("Change Background Image (Current: " + currentImageIndex + ")", bStyle))
+            if (GUILayout.Button("Change Background Image (Current: " + (currentImageIndex + 1) + " / " + currImgName + ")", bStyle))
             {
-                currentImageIndex = (currentImageIndex + 1) % 3;
+                if (imageBg == false)
+                {
+                    Say("Error: No Current Image as Background - Enable The Image as Background Setting");
+                }
+
+                else if (imageBg == true)
+                {
+                    currentImageIndex = (currentImageIndex + 1) % 4;
+                    Say("Current Image: " + (currentImageIndex + 1) + " / " + nextCurrImgName);
+                }
+
+                else
+                    return;
             }
 
             GUILayout.Space(6f);
@@ -523,7 +580,7 @@ namespace CDDZTrainer
             // Stats/Status/Labels
             GUILayout.Space(6f);
 
-            GUILayout.Label("Immunity patch: " + ImmunityPatch.Status + " | Current Image: " + currentImageIndex, lStyle);
+            GUILayout.Label("Immunity patch: " + ImmunityPatch.Status + " | Current Image: " + (currentImageIndex + 1) + " / " + currImgName, lStyle);
 
             GUI.DragWindow();
         }
