@@ -7,7 +7,7 @@
 ### Statistics:
 ![GitHub Release](https://img.shields.io/github/v/release/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ?style=for-the-badge&logo=github&color=5865F2)
 ![GitHub Repo Size](https://img.shields.io/github/repo-size/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ?style=for-the-badge&logo=github&color=5865F2)
-![GitHub Downloads](https://img.shields.io/github/downloads/total/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ?style=for-the-badge&logo=github&color=5865F2)
+![GitHub Downloads](https://img.shields.io/github/downloads/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ/total?style=for-the-badge&logo=github&color=5865F2)
 ![GitHub Issues](https://img.shields.io/github/issues/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ?style=for-the-badge&logo=github&color=5865F2)
 ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ?style=for-the-badge&logo=github&color=5865F2)
 ![GitHub Forks](https://img.shields.io/github/forks/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ?style=for-the-badge&logo=github&color=5865F2)
