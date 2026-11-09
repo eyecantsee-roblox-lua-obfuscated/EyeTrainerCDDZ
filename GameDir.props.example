@@ -1,0 +1,6 @@
+<Project>
+  <!-- Copy this file to GameDir.props (it is git-ignored) and set your game folder if it is not this one. -->
+  <PropertyGroup>
+    <GameDir>C:\Program Files (x86)\Steam\steamapps\common\Clone Drone in the Danger Zone</GameDir>
+  </PropertyGroup>
+</Project>

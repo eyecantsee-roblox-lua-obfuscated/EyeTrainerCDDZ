@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Optional per-machine override, not committed to git. Copy GameDir.props.example to GameDir.props. -->
+  <Import Project="GameDir.props" Condition="Exists('GameDir.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>CDDZTrainerMod</AssemblyName>
+    <RootNamespace>CDDZTrainer</RootNamespace>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <NoWarn>$(NoWarn);612;618;1607;1701;1702</NoWarn>
+
+    <!-- Where the game is installed. Override in GameDir.props or with: msbuild /p:GameDir="D:\Games\..." -->
+	<!-- Change it if you have a different mod or game path -->
+    <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Clone Drone in the Danger Zone</GameDir>
+    <ManagedDir>$(GameDir)\Clone Drone in the Danger Zone_Data\Managed</ManagedDir>
+    <ModInstallDir>$(GameDir)\mods\CDDZTrainerMod</ModInstallDir>
+
+    <!-- Build against the game's own framework assemblies only (same as build.bat). Using the
+         .NET Framework ones as well causes "CS1703: assembly with the same identity" errors. -->
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <NoStdLib Condition="Exists('$(ManagedDir)\mscorlib.dll')">true</NoStdLib>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Everything in the game's Managed folder: Assembly-CSharp, ModLibrary, 0Harmony, UnityEngine.*, ... -->
+    <Reference Include="$(ManagedDir)\*.dll" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Update="ModInfo.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Remove="GameDir.props;GameDir.props.example;README.txt;build.bat" />
+  </ItemGroup>
+
+  <!-- After a successful build, copy the mod into the game's mods folder (if it exists).
+       Turn off with: msbuild /p:InstallToGame=false -->
+  <Target Name="InstallToGame" AfterTargets="Build" Condition="'$(InstallToGame)' != 'false' And Exists('$(GameDir)\mods')">
+    <MakeDir Directories="$(ModInstallDir)" />
+	  <Copy SourceFiles="$(TargetPath);$(MSBuildProjectDirectory)\ModInfo.json;$(MSBuildProjectDirectory)\icon.png" DestinationFolder="$(ModInstallDir)" />
+    <Message Importance="high" Text="Installed mod to $(ModInstallDir)" />
+  </Target>
+
+</Project>
