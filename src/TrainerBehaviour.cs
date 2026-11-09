@@ -324,6 +324,10 @@ namespace CDDZTrainer
         private string currImgName;
         private string nextCurrImgName;
 
+        // Window/Category Variables
+        private int currentTab = 0; // 0 = Settings, 1 = Mods 1, 2 = Mods 2, 3 = Mods 3, 4 = Credits
+        // ^^^^^^^^^^^^^^^^^ --- New for tabs/categories
+
         // New additions to add a image to the menu gui as it's cooler than just a transparent black cube essentially
         void InitWindowStyle() // kinda hard-coded?
         {
@@ -510,6 +514,29 @@ namespace CDDZTrainer
 
             if (menuOpen)
             {
+                // New panel for category/tabs
+                // Ensure window has safe initial coordinates if uninitialized
+                if (window.width == 0) window = new Rect(100f, 100f, 320f, 300f);
+
+                // --- DOCKED SIDE TAB PANEL (Using safe non-layout GUI.Button to prevent layout crashes) --- (idc if you think its shit AJ)
+                Rect sideTabRect = new Rect(window.x - 90f, window.y, 85f, 175f);
+
+                GUIStyle panelStyle = imageBg ? windowStyle : GUI.skin.box;
+
+                GUI.Box(sideTabRect, "", panelStyle);
+
+                GUIStyle sideBtnStyle = imageBg ? buttonStyle : GUI.skin.button;
+
+                if (GUI.Button(new Rect(sideTabRect.x + 5f, sideTabRect.y + 8f, 75f, 28f), "Settings", sideBtnStyle)) currentTab = 0;
+                if (GUI.Button(new Rect(sideTabRect.x + 5f, sideTabRect.y + 40f, 75f, 28f), "Mods 1", sideBtnStyle)) currentTab = 1;
+                if (GUI.Button(new Rect(sideTabRect.x + 5f, sideTabRect.y + 72f, 75f, 28f), "Mods 2", sideBtnStyle)) currentTab = 2;
+                if (GUI.Button(new Rect(sideTabRect.x + 5f, sideTabRect.y + 104f, 75f, 28f), "Mods 3", sideBtnStyle)) currentTab = 3;
+                if (GUI.Button(new Rect(sideTabRect.x + 5f, sideTabRect.y + 136f, 75f, 28f), "Credits", sideBtnStyle)) currentTab = 4;
+
+                // ------------------------------------------------------------------------
+
+                // --- MAIN WINDOW ---
+
                 if (imageBg)
                 {
                     InitWindowStyle();
@@ -534,53 +561,104 @@ namespace CDDZTrainer
             // -----------------------------------------------------
 
             // Settings
-            if (GUILayout.Button("Change Background Image (Current: " + (currentImageIndex + 1) + " / " + currImgName + ")", bStyle))
+            if (currentTab == 0)
             {
-                if (imageBg == false)
+                GUILayout.Space(2f);
+
+                if (GUILayout.Button("Change Background Image (Current: " + (currentImageIndex + 1) + " / " + currImgName + ")", bStyle))
                 {
-                    Say("Error: No Current Image as Background - Enable The Image as Background Setting");
+                    if (imageBg == false)
+                    {
+                        Say("Error: No Current Image as Background - Enable The Image as Background Setting");
+                    }
+
+                    else if (imageBg == true)
+                    {
+                        currentImageIndex = (currentImageIndex + 1) % 4;
+                        Say("Current Image: " + (currentImageIndex + 1) + " / " + nextCurrImgName);
+                    }
+
+                    else
+                        return;
                 }
 
-                else if (imageBg == true)
-                {
-                    currentImageIndex = (currentImageIndex + 1) % 4;
-                    Say("Current Image: " + (currentImageIndex + 1) + " / " + nextCurrImgName);
-                }
+                GUILayout.Space(6f);
 
-                else
-                    return;
+                imageBg = GUILayout.Toggle(imageBg, " Image as Background ", tStyle);
+                transparentImage = GUILayout.Toggle(transparentImage, " Transparent Image ", tStyle);
+
+                if (!imageBg) transparentImage = false; // simple if statement to ensure transparent image is off when image background is as it can't do anything
+
+                GUILayout.Space(6f);
+
+                GUILayout.Space(15f);
+
+                GUILayout.Label("Current Image: " + (currentImageIndex + 1) + " / " + currImgName, lStyle);
             }
 
-            GUILayout.Space(6f);
+            // -----------------------------------------------------
 
-            imageBg = GUILayout.Toggle(imageBg, " Image as Background ", tStyle);
-            transparentImage = GUILayout.Toggle(transparentImage, " Transparent Image ", tStyle);
+            // Mods 1
+            else if (currentTab == 1)
+            {
+                bool imm = GUILayout.Toggle(ImmunityPatch.Enabled, " Immunity  [" + Config.ImmunityKey + "]", tStyle);
+                if (imm != ImmunityPatch.Enabled) SetImmunity(imm);
 
-            if (!imageBg) transparentImage = false; // simple if statement to ensure transparent image is off when image background is as it can't do anything
+                bool rf = GUILayout.Toggle(rapidFire, " Rapid fire  [" + Config.RapidFireKey + "]", tStyle);
+                if (rf != rapidFire) SetRapid(rf);
+
+                bool g = GUILayout.Toggle(gunEquipped, " Custom Gun  [" + Config.GunKey + "]   Fire: " + Config.FireKey, tStyle);
+                if (g != gunEquipped) SetGun(g);
+
+                GUILayout.Space(6f);
+
+                if (GUILayout.Button("Kill all other robots  [" + Config.KillAllKey + "]", bStyle)) KillAll();
+                if (GUILayout.Button("Write API info to file  [" + Config.DumpKey + "]", bStyle)) Dump();
+
+                GUILayout.Space(6f);
+
+                GUILayout.Label("Immunity patch: " + ImmunityPatch.Status, lStyle);
+            }
 
             // -----------------------------------------------------
 
-            // Mods
-            bool imm = GUILayout.Toggle(ImmunityPatch.Enabled, " Immunity  [" + Config.ImmunityKey + "]", tStyle);
-            if (imm != ImmunityPatch.Enabled) SetImmunity(imm);
-
-            bool rf = GUILayout.Toggle(rapidFire, " Rapid fire  [" + Config.RapidFireKey + "]", tStyle);
-            if (rf != rapidFire) SetRapid(rf);
-
-            bool g = GUILayout.Toggle(gunEquipped, " Custom Gun  [" + Config.GunKey + "]   Fire: " + Config.FireKey, tStyle);
-            if (g != gunEquipped) SetGun(g);
-
-            GUILayout.Space(6f);
-
-            if (GUILayout.Button("Kill all other robots  [" + Config.KillAllKey + "]", bStyle)) KillAll();
-            if (GUILayout.Button("Write API info to file  [" + Config.DumpKey + "]", bStyle)) Dump();
+            // Mods 2
+            else if (currentTab == 2)
+            {
+                GUILayout.Label("empty", lStyle);
+                GUILayout.Space(28f);
+            }
 
             // -----------------------------------------------------
 
-            // Stats/Status/Labels
-            GUILayout.Space(6f);
+            // Mods 3
+            else if (currentTab == 3)
+            {
+                GUILayout.Label("empty", lStyle);
+                GUILayout.Space(28f);
+            }
 
-            GUILayout.Label("Immunity patch: " + ImmunityPatch.Status + " | Current Image: " + (currentImageIndex + 1) + " / " + currImgName, lStyle);
+            // -----------------------------------------------------
+
+            // Credits
+            else if (currentTab == 4)
+            {
+                GUILayout.Label("Welcome to EyeCantSee's Trainer!", lStyle);
+                GUILayout.Space(6f);
+                GUILayout.Label("Trainer Made By: EyeCantSee", lStyle);
+                GUILayout.Space(6f);
+                GUILayout.Label("eyecantsee0466 On Discord", lStyle);
+                GUILayout.Space(6f);
+                if (GUILayout.Button("Click Me For Credits", lStyle))
+                {
+                    Say(
+                        "Menu/Trainer Made By: EyeCantSee (eyecantsee0466 On Discord)" +
+                        "Background Image Switcher Suggestion By: EyeCantSee"
+                    );
+                }
+            }
+
+            // -----------------------------------------------------
 
             GUI.DragWindow();
         }
