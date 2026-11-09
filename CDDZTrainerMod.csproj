@@ -34,7 +34,10 @@
 
   <ItemGroup>
 	<None Update="ModInfo.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="icon.png" CopyToOutputDirectory="PreserveNewest" />
+	<None Update="icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="icon2.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="icon3.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="icon4.png" CopyToOutputDirectory="PreserveNewest" />
     <None Remove="GameDir.props;GameDir.props.example;README.txt;build.bat" />
   </ItemGroup>
 
@@ -42,7 +45,7 @@
        Turn off with: msbuild /p:InstallToGame=false -->
   <Target Name="InstallToGame" AfterTargets="Build" Condition="'$(InstallToGame)' != 'false' And Exists('$(GameDir)\mods')">
     <MakeDir Directories="$(ModInstallDir)" />
-	  <Copy SourceFiles="$(TargetPath);$(MSBuildProjectDirectory)\ModInfo.json;$(MSBuildProjectDirectory)\icon.png" DestinationFolder="$(ModInstallDir)" />
+	  <Copy SourceFiles="$(TargetPath);$(MSBuildProjectDirectory)\ModInfo.json;$(MSBuildProjectDirectory)\icon.png;$(MSBuildProjectDirectory)\icon2.png;$(MSBuildProjectDirectory)\icon3.png;$(MSBuildProjectDirectory)\icon4.png" DestinationFolder="$(ModInstallDir)" />
     <Message Importance="high" Text="Installed mod to $(ModInstallDir)" />
   </Target>
 

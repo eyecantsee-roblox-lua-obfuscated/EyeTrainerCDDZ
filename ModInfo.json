@@ -6,5 +6,5 @@
   "Version": 1,
   "Description": "Simple Trainer | Keybinds: Custom Gun (G to enable/spawn, F to fire), Immunity Toggle (F2), Rapid Fire / No Fire Cooldown on Custom Gun Toggle (F3), Trainer Menu (DEL/Delete Key to Open/Close).",
   "ModDependencies": [],
-  "Tags": ["EyeCantSee", "Mod", "Github", "Trainer", "Cheat Menu", "Item", "Custom Item", "Cheat", "Simple", "Menu", "GUI"]
+  "Tags": ["EyeCantSee", "Mod", "Github", "Trainer", "Cheat Menu", "Item", "Custom Item", "Cheat", "Simple", "Menu", "GUI", "Discord"]
 }

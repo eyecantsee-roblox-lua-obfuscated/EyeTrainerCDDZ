@@ -318,13 +318,28 @@ namespace CDDZTrainer
         private bool transparentImage = true;
         private bool imageBg = true;
 
+        private int currentImageIndex = 0; // 0 = icon.png, 1 = icon2.png, 2 = icon3.png, 3 = icon4.png | suggested by EyeCantSee, made By EyeCantSee (im crazy </3)
+
         // New additions to add a image to the menu gui as it's cooler than just a transparent black cube essentially
         void InitWindowStyle() // kinda hard-coded?
         {
             // if (styleInitialized) return; // no longer needed as settings have been introduced, moved lower in the code
 
             string modDirectory = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string path = System.IO.Path.Combine(modDirectory, "icon.png");
+            
+            // re-worked filePath to make a bloated version of switching types (not based on iis menu timmy, switch and case is programming)
+            string fileName = "icon.png";
+            if (currentImageIndex == 1) fileName = "icon2.png";
+            else if (currentImageIndex == 2) fileName = "icon3.png";
+            else if (currentImageIndex == 3) fileName = "icon4.png";
+
+            string path = System.IO.Path.Combine(modDirectory, fileName);
+
+            // Restore original state
+            if (!System.IO.File.Exists(path))
+            {
+                path = System.IO.Path.Combine(modDirectory, "icon.png");
+            }
 
             // new non-hardcoded shit one that works:
             ///*
@@ -471,11 +486,22 @@ namespace CDDZTrainer
             GUIStyle bStyle = imageBg ? buttonStyle : GUI.skin.button;
             GUIStyle lStyle = imageBg ? labelStyle : GUI.skin.label;
 
+            // -----------------------------------------------------
+
             // Settings
+            if (GUILayout.Button("Change Background Image (Current: " + currentImageIndex + ")", bStyle))
+            {
+                currentImageIndex = (currentImageIndex + 1) % 3;
+            }
+
+            GUILayout.Space(6f);
+
             imageBg = GUILayout.Toggle(imageBg, " Image as Background ", tStyle);
             transparentImage = GUILayout.Toggle(transparentImage, " Transparent Image ", tStyle);
 
             if (!imageBg) transparentImage = false; // simple if statement to ensure transparent image is off when image background is as it can't do anything
+
+            // -----------------------------------------------------
 
             // Mods
             bool imm = GUILayout.Toggle(ImmunityPatch.Enabled, " Immunity  [" + Config.ImmunityKey + "]", tStyle);
@@ -488,12 +514,16 @@ namespace CDDZTrainer
             if (g != gunEquipped) SetGun(g);
 
             GUILayout.Space(6f);
+
             if (GUILayout.Button("Kill all other robots  [" + Config.KillAllKey + "]", bStyle)) KillAll();
             if (GUILayout.Button("Write API info to file  [" + Config.DumpKey + "]", bStyle)) Dump();
 
+            // -----------------------------------------------------
+
             // Stats/Status/Labels
             GUILayout.Space(6f);
-            GUILayout.Label("Immunity patch: " + ImmunityPatch.Status, lStyle);
+
+            GUILayout.Label("Immunity patch: " + ImmunityPatch.Status + " | Current Image: " + currentImageIndex, lStyle);
 
             GUI.DragWindow();
         }
