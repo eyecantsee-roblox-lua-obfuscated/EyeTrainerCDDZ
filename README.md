@@ -16,8 +16,9 @@
 ![GitHub Stars](https://img.shields.io/github/stars/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ?style=for-the-badge&logo=github&color=5865F2)
 ![License](https://img.shields.io/github/license/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ?style=for-the-badge&logo=mit&color=5865F2)
 
-### Languages Used:
+### Languages Used In This Repo/Project:
 ![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=csharp&logoColor=white)
+![C#](https://img.shields.io/badge/Batchfile-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
 
 Most Used Language:
 
