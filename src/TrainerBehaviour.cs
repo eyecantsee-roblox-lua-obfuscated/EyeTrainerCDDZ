@@ -604,7 +604,7 @@ namespace CDDZTrainer
                 bool imm = GUILayout.Toggle(ImmunityPatch.Enabled, " Immunity  [" + Config.ImmunityKey + "]", tStyle);
                 if (imm != ImmunityPatch.Enabled) SetImmunity(imm);
 
-                bool rf = GUILayout.Toggle(rapidFire, " Rapid fire  [" + Config.RapidFireKey + "]", tStyle);
+                bool rf = GUILayout.Toggle(rapidFire, " Rapid Fire  [" + Config.RapidFireKey + "]", tStyle);
                 if (rf != rapidFire) SetRapid(rf);
 
                 bool g = GUILayout.Toggle(gunEquipped, " Custom Gun  [" + Config.GunKey + "]   Fire: " + Config.FireKey, tStyle);
@@ -612,12 +612,12 @@ namespace CDDZTrainer
 
                 GUILayout.Space(6f);
 
-                if (GUILayout.Button("Kill all other robots  [" + Config.KillAllKey + "]", bStyle)) KillAll();
+                if (GUILayout.Button("Kill All Other Robots  [" + Config.KillAllKey + "]", bStyle)) KillAll();
                 if (GUILayout.Button("Write API info to file  [" + Config.DumpKey + "]", bStyle)) Dump();
 
                 GUILayout.Space(6f);
 
-                GUILayout.Label("Immunity patch: " + ImmunityPatch.Status, lStyle);
+                GUILayout.Label("Immunity Patch: " + ImmunityPatch.Status, lStyle);
             }
 
             // -----------------------------------------------------
