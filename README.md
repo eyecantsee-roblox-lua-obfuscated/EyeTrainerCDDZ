@@ -36,8 +36,9 @@ A SIMPLE AS FUCK trainer designed for the game **'Clone Drone in the Danger Zone
 
 ## More Information
 
+
 <details>
-<summary><b>🟢 Features & Such (Click to expand)</b></summary>
+<summary><b>🟢 Overview of Features & Such</b></summary>
 
 * **Simple GUI:** Smooth and simple for no lag, also it's just a side project.
 * **Easy to Understand Mods:** Yes Yes.
@@ -48,6 +49,18 @@ A SIMPLE AS FUCK trainer designed for the game **'Clone Drone in the Danger Zone
 </details>
 
 # Important
+
+<details open>
+<summary><b>⚠️ DISCLAIMER</b></summary>
+
+<div align="center">
+This repository is intended for offline single-player testing/playing purposes only. Using this trainer in online multiplayer environments may violate service terms or result in account bans. Use at your own risk.
+ 
+ I, **EyeCantSee** am **NOT** responsible for any bans using this menu.
+</div>
+
+</details>
+
 ### Yes,
 You can make a pull request or suggest mods/code in issues and/or make issues if there are errors
 
@@ -56,6 +69,8 @@ You can help commit and maybe get perks plus i'll add a credits area with your n
 You can fork or skid but give credits boii, no reel skiddas allowed
 
 You can star if you want :3
+
+Using this in multiplayer or such online, may result in a ban. So please read the Disclaimer above first, Thank you & Thanks for you're patience.
 
 ---
 
