@@ -2,7 +2,7 @@
 
 # EyeTrainerCDDZ
 
-<img src="icon.png" alt="Miku Uno - EyeTrainerBG/icon.png" width="250">
+<img src="Images/icon.png" alt="Miku Uno - EyeTrainerBG/icon.png" width="250">
 
 ### Statistics:
 ![GitHub Release](https://img.shields.io/github/v/release/eyecantsee-roblox-lua-obfuscated/EyeTrainerCDDZ?style=for-the-badge&logo=github&color=5865F2)
