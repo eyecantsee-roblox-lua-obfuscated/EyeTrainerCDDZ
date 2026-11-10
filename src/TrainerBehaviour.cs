@@ -653,7 +653,17 @@ namespace CDDZTrainer
                 {
                     Say(
                         "Menu/Trainer Made By: EyeCantSee (eyecantsee0466 On Discord)" +
+                        "\n" +
                         "Background Image Switcher Suggestion By: EyeCantSee"
+                    );
+
+                    GUILayout.Space(6f);
+
+                    GUILayout.Label(
+                        "Menu/Trainer Made By: EyeCantSee (eyecantsee0466 On Discord)" +
+                        "\n" +
+                        "Background Image Switcher Suggestion By: EyeCantSee",
+                        lStyle
                     );
                 }
             }

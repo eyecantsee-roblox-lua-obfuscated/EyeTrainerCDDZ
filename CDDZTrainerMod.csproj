@@ -15,6 +15,17 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <NoWarn>$(NoWarn);612;618;1607;1701;1702</NoWarn>
 
+	<!-- Assembly Metadata Attributes Fix -->
+	<Title>EyeCantTrainer</Title>
+	<Description>A Simple cheat trainer with a not so sleek modern look.</Description>
+	<Company>EyeStudios LLC</Company>
+	<Product>SimpleTrainer</Product>
+	<Copyright>Copyright © 2026</Copyright>
+	<!-- <Trademark>EyeTrainer™/EyeCantTrainer™</TradeMark> --> <!-- Trademark doesn't exist here -->
+	<Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+	<FileVersion>1.1.0.0</FileVersion>
+
     <!-- Where the game is installed. Override in GameDir.props or with: msbuild /p:GameDir="D:\Games\..." -->
 	<!-- Change it if you have a different mod or game path -->
     <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Clone Drone in the Danger Zone</GameDir>

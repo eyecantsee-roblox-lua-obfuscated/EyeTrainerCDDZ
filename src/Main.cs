@@ -18,11 +18,11 @@ namespace CDDZTrainer
             GameObject old = GameObject.Find(ControllerName);
             if (old != null)
             {
-                UnityEngine.Object.DestroyImmediate(old);
+                Object.DestroyImmediate(old);
             }
 
             GameObject go = new GameObject(ControllerName);
-            UnityEngine.Object.DontDestroyOnLoad(go);
+            Object.DontDestroyOnLoad(go);
             go.AddComponent<TrainerBehaviour>();
         }
     }
