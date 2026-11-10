@@ -19,6 +19,19 @@ namespace CDDZTrainer
                                        BindingFlags.FlattenHierarchy;
 
         static readonly Dictionary<string, Type> typeCache = new Dictionary<string, Type>();
+        static readonly Dictionary<string, List<MethodInfo>> methodCache = new Dictionary<string, List<MethodInfo>>();
+        static readonly Dictionary<string, bool> reported = new Dictionary<string, bool>();
+
+        /// <summary>The most recent "member not found / call failed" message, shown in the menu.</summary>
+        public static string LastProblem = "";
+
+        static void Report(string message)
+        {
+            if (reported.ContainsKey(message)) return;
+            reported[message] = true;
+            LastProblem = message;
+            Debug.Log("[CDDZTrainer] " + message);
+        }
 
         public static Type FindType(string fullName)
         {
@@ -51,6 +64,100 @@ namespace CDDZTrainer
             if (f != null) return f.GetValue(null);
 
             return null;
+        }
+
+        static List<MethodInfo> Candidates(Type type, string name)
+        {
+            string key = type.FullName + "." + name;
+            List<MethodInfo> list;
+            if (!methodCache.TryGetValue(key, out list))
+            {
+                list = new List<MethodInfo>();
+                foreach (MethodInfo m in type.GetMethods(AnyMember))
+                {
+                    if (m.Name == name && !m.IsGenericMethodDefinition) list.Add(m);
+                }
+                methodCache[key] = list;
+            }
+            return list;
+        }
+
+        static bool TryConvert(object arg, Type p, out object value)
+        {
+            value = null;
+            if (p.IsByRef) return false;
+            if (arg == null) return !p.IsValueType;
+            if (p.IsInstanceOfType(arg))
+            {
+                value = arg;
+                return true;
+            }
+
+            try
+            {
+                if (p.IsEnum)
+                {
+                    if (arg is string) value = Enum.Parse(p, (string)arg);
+                    else value = Enum.ToObject(p, arg);
+                    return true;
+                }
+                if (arg is IConvertible && p.IsPrimitive)
+                {
+                    value = Convert.ChangeType(arg, p);
+                    return true;
+                }
+            }
+            catch { }
+            return false;
+        }
+
+        /// <summary>Calls an instance method by name, matching overloads on argument count/type.</summary>
+        public static bool TryCall(object target, string name, out object result, params object[] args)
+        {
+            result = null;
+            if (target == null) return false;
+            if (args == null) args = new object[0];
+
+            Type type = target.GetType();
+            string lastError = null;
+
+            foreach (MethodInfo m in Candidates(type, name))
+            {
+                ParameterInfo[] ps = m.GetParameters();
+                if (ps.Length != args.Length) continue;
+
+                object[] converted = new object[ps.Length];
+                bool ok = true;
+                for (int i = 0; i < ps.Length; i++)
+                {
+                    if (!TryConvert(args[i], ps[i].ParameterType, out converted[i]))
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (!ok) continue;
+
+                try
+                {
+                    result = m.Invoke(m.IsStatic ? null : target, converted);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    lastError = e.GetBaseException().Message;
+                }
+            }
+
+            if (lastError != null) Report(type.Name + "." + name + " failed: " + lastError);
+            else Report(type.Name + "." + name + " not found (or arguments don't match)");
+            return false;
+        }
+
+        public static bool Call(object target, string name, params object[] args)
+        {
+            object result;
+            return TryCall(target, name, out result, args);
         }
 
         /// <summary>CharacterTracker.Instance.GetPlayer()</summary>
@@ -130,6 +237,11 @@ namespace CDDZTrainer
                 Debug.Log("[CDDZTrainer] SetImmune failed: " + e.GetBaseException().Message);
                 return false;
             }
+        }
+
+        public static bool Teleport(Component character, Vector3 position)
+        {
+            return Call(character, "SetPositionOfUsOrMount", position);
         }
 
         /// <summary>The gameplay camera: Camera.main, else the player's own camera, else any enabled camera.</summary>

@@ -8,7 +8,8 @@ namespace CDDZTrainer
         public static KeyCode MenuKey = KeyCode.Delete;   // open / close trainer menu
         public static KeyCode ImmunityKey = KeyCode.F2;   // toggle immunity (cannot die)
         public static KeyCode RapidFireKey = KeyCode.F3;  // toggle rapid fire
-        public static KeyCode KillAllKey = KeyCode.F4;    // kill every other robot
+        public static KeyCode FreezeAllKey = KeyCode.F4;  // toggle freezing / unfreezing all other robots
+        public static KeyCode KillAllKey = KeyCode.F5;    // kill every other robot
         public static KeyCode DumpKey = KeyCode.F9;       // write API diagnostics to a file
         public static KeyCode GunKey = KeyCode.G;         // spawn/enable / put away/disable the custom gun
         public static KeyCode FireKey = KeyCode.F;        // fire the gun (hold when rapid fire is on)

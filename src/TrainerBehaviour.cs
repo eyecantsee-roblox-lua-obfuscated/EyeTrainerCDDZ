@@ -12,6 +12,8 @@ namespace CDDZTrainer
         bool menuOpen;
         bool gunEquipped;
         bool rapidFire;
+        bool frozen;
+        bool airJump;
         bool errorLogged;
 
         GameObject gun;
@@ -37,6 +39,7 @@ namespace CDDZTrainer
                 if (Input.GetKeyDown(Config.ImmunityKey)) SetImmunity(!ImmunityPatch.Enabled);
                 if (Input.GetKeyDown(Config.RapidFireKey)) SetRapid(!rapidFire);
                 if (Input.GetKeyDown(Config.GunKey)) SetGun(!gunEquipped);
+                if (Input.GetKeyDown(Config.FreezeAllKey)) SetFrozen(!frozen);
                 if (Input.GetKeyDown(Config.KillAllKey)) KillAll();
                 if (Input.GetKeyDown(Config.DumpKey)) Dump();
 
@@ -103,6 +106,17 @@ namespace CDDZTrainer
             }
         }
 
+        void AirJump(bool on)
+        {
+            airJump = on;
+            Say("AirJump " + (on ? "ON" : "OFF"));
+            if (on && Input.GetKeyDown(KeyCode.Space))
+            {
+                Component player = GameApi.GetPlayer();
+                GameApi.Call(player, "TriggerJump", 16);
+            }
+        }
+
         void SetImmunity(bool on)
         {
             // essentially uses in game immune flag then fallbacks to a harmony patch that blocks Character.Kill on the player
@@ -142,11 +156,66 @@ namespace CDDZTrainer
             }
         }
 
+        // todo: fix all TriggerJump type mods
+        // todo: add 2 new mods tabs and change panel/gui a lil + remove/reduce a few mods (new jump related can be moved), to reduce size to orig/previous size/build of gui when on mods 1 category
+
         // un-needed/no longer needed, but it dumps api info which can be easier, remove this or expand it, idc
         void Dump()
         {
             string path = GameApi.DumpApiInfo();
             Say("API info written to " + path);
+        }
+
+        void SetFrozen(bool on)
+        {
+            frozen = on;
+            Say("FreezeAll " + (on ? "ON" : "OFF"));
+            if (on)
+            {
+                Component player = GameApi.GetPlayer();
+                int frozenEnemies = 0;
+                foreach (Component c in GameApi.GetEnemies(player))
+                {
+                    if (c == null || !GameApi.IsAlive(c)) continue;
+                    if (GameApi.Call(c, "SetMovementSimulationDisabled", true)) frozenEnemies++;
+                }
+                Say("Froze " + frozenEnemies + " enemy robot(s)");
+            }
+            else
+            {
+                Component player = GameApi.GetPlayer();
+                int frozenEnemies = 0;
+                foreach (Component c in GameApi.GetEnemies(player))
+                {
+                    if (c == null || !GameApi.IsAlive(c)) continue;
+                    if (GameApi.Call(c, "SetMovementSimulationDisabled", false)) frozenEnemies++;
+                }
+                Say("Unfroze " + frozenEnemies + " enemy robot(s)");
+            }
+        }
+
+        void MakeAllJump()
+        {
+            Component player = GameApi.GetPlayer();
+            int jumped = 0;
+            foreach (Component c in GameApi.GetEnemies(player))
+            {
+                if (c == null || !GameApi.IsAlive(c)) continue;
+                if (GameApi.Call(c, "TriggerJump", 16)) jumped++;
+            }
+            Say("Made " + jumped + " enemy robot(s)" + " jump");
+        }
+
+        void LaunchAll_Space()
+        {
+            Component player = GameApi.GetPlayer();
+            int launched = 0;
+            foreach (Component c in GameApi.GetEnemies(player))
+            {
+                if (c == null || !GameApi.IsAlive(c)) continue;
+                if (GameApi.Call(c, "TriggerJump", 999.99f)) launched++;
+            }
+            Say("Launched " + launched + " enemy robot(s)" + " into space");
         }
 
         void KillAll()
@@ -589,10 +658,6 @@ namespace CDDZTrainer
 
                 if (!imageBg) transparentImage = false; // simple if statement to ensure transparent image is off when image background is as it can't do anything
 
-                GUILayout.Space(6f);
-
-                GUILayout.Space(15f);
-
                 GUILayout.Label("Current Image: " + (currentImageIndex + 1) + " / " + currImgName, lStyle);
             }
 
@@ -601,17 +666,25 @@ namespace CDDZTrainer
             // Mods 1
             else if (currentTab == 1)
             {
+                bool aj = GUILayout.Toggle(airJump, " Air Jump", tStyle);
+                if (aj != airJump) AirJump(aj);
+
                 bool imm = GUILayout.Toggle(ImmunityPatch.Enabled, " Immunity  [" + Config.ImmunityKey + "]", tStyle);
                 if (imm != ImmunityPatch.Enabled) SetImmunity(imm);
 
                 bool rf = GUILayout.Toggle(rapidFire, " Rapid Fire  [" + Config.RapidFireKey + "]", tStyle);
                 if (rf != rapidFire) SetRapid(rf);
 
-                bool g = GUILayout.Toggle(gunEquipped, " Custom Gun  [" + Config.GunKey + "]   Fire: " + Config.FireKey, tStyle);
+                bool g = GUILayout.Toggle(gunEquipped, " Custom Gun  [" + Config.GunKey + "]   Fire [" + Config.FireKey + "]", tStyle);
                 if (g != gunEquipped) SetGun(g);
+
+                bool fe = GUILayout.Toggle(frozen, " Freeze All Other Robots  [" + Config.FreezeAllKey + "]", tStyle);
+                if (fe != frozen) SetFrozen(fe);
 
                 GUILayout.Space(6f);
 
+                if (GUILayout.Button("Make All Other Robots Jump", bStyle)) MakeAllJump();
+                if (GUILayout.Button("Launch All Other Robots" + " " + "Into Space", bStyle)) LaunchAll_Space();
                 if (GUILayout.Button("Kill All Other Robots  [" + Config.KillAllKey + "]", bStyle)) KillAll();
                 if (GUILayout.Button("Write API info to file  [" + Config.DumpKey + "]", bStyle)) Dump();
 
@@ -626,7 +699,6 @@ namespace CDDZTrainer
             else if (currentTab == 2)
             {
                 GUILayout.Label("empty", lStyle);
-                GUILayout.Space(28f);
             }
 
             // -----------------------------------------------------
@@ -635,7 +707,6 @@ namespace CDDZTrainer
             else if (currentTab == 3)
             {
                 GUILayout.Label("empty", lStyle);
-                GUILayout.Space(28f);
             }
 
             // -----------------------------------------------------
@@ -656,16 +727,14 @@ namespace CDDZTrainer
                         "\n" +
                         "Background Image Switcher Suggestion By: EyeCantSee"
                     );
-
-                    GUILayout.Space(6f);
-
-                    GUILayout.Label(
-                        "Menu/Trainer Made By: EyeCantSee (eyecantsee0466 On Discord)" +
-                        "\n" +
-                        "Background Image Switcher Suggestion By: EyeCantSee",
-                        lStyle
-                    );
                 }
+                GUILayout.Space(6f);
+                GUILayout.Label(
+                    "Menu/Trainer Made By: EyeCantSee (eyecantsee0466 On Discord)" +
+                    "\n" +
+                    "Background Image Switcher Suggestion By: EyeCantSee",
+                    lStyle
+                );
             }
 
             // -----------------------------------------------------
