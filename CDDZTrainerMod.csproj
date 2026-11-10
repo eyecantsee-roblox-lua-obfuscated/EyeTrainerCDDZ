@@ -47,7 +47,9 @@
 	  <Copy SourceFiles="@(None)" Condition="'%(RecursiveDir)' != '' And %(Filename) == 'icon' Or %(Filename) == 'icon2' Or %(Filename) == 'icon3' Or %(Filename) == 'icon4'" DestinationFolder="$(ModInstallDir)\Images\%(RecursiveDir)" />
     <Message Importance="high" Text="Installed mod to $(ModInstallDir)" />
   </Target>
-  --> <!--deprecated above, after attempting to update, refer to below-->
+  --> 
+	
+	<!--deprecated above, after attempting to update, refer to below-->
 
 	<Target Name="InstallToGame" AfterTargets="Build" Condition="'$(InstallToGame)' != 'false' And Exists('$(GameDir)\mods')">
 	  <MakeDir Directories="$(ModInstallDir);$(ModInstallDir)\Images" />
